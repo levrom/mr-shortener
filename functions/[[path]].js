@@ -32,7 +32,10 @@ async function handleRedirect({ request, env }) {
   }
 
   try {
-    const target = new URL(destination, url);
+    const normalizedDestination = destination.trim().replace(/^["']|["']$/g, "");
+    const target = /^[a-zA-Z][a-zA-Z\d+\-.]*:\/\//.test(normalizedDestination)
+      ? new URL(normalizedDestination)
+      : new URL(`https://${normalizedDestination}`);
     const response = Response.redirect(target.toString(), 302);
     response.headers.set("cache-control", "no-store");
     return response;
