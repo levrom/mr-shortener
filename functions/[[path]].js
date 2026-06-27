@@ -62,9 +62,13 @@ async function handleRedirect({ request, env }) {
     const target = /^[a-zA-Z][a-zA-Z\d+\-.]*:\/\//.test(normalizedDestination)
       ? new URL(normalizedDestination)
       : new URL(`https://${normalizedDestination}`);
-    const response = Response.redirect(target.toString(), 302);
-    response.headers.set("cache-control", "no-store");
-    return response;
+    return new Response(null, {
+      status: 302,
+      headers: {
+        Location: target.toString(),
+        "cache-control": "no-store",
+      },
+    });
   } catch (error) {
     return fail(500, "Stored destination is not a valid URL.", {
       raw: destination,
